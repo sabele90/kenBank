@@ -29,18 +29,21 @@ const Cards = () => {
       {/* Tarjeta 2 - Modo claro */}
       <div
         className="hidden dark:block min-w-[280px] max-w-[280px] h-[160px] rounded-xl bg-cover bg-center shadow-lg 
-        hover:shadow-xl hover:scale-105 transition-transform duration-300 cursor-pointer flex flex-col justify-between p-4 text-white"
+        hover:shadow-xl hover:scale-105 transition-transform duration-300 cursor-pointer flex flex-col justify-between p-4 text-black"
         style={{
           backgroundImage: `url('./darkCardVisa2.png')`,
         }}
       >
-        <div>
-          <p className="text-lg font-bold">{account?.number || "Loading..."}</p>
-        </div>
-        <div>
-          <p className="text-sm">Balance</p>
-          <p className="text-lg font-bold">${balance.toFixed(2)}</p>
-        </div>
+        <div className="flex justify-center pt-6">
+  
+  <p className="text-md ">{account?.number || "Loading..."}</p>
+</div>
+<div className="pt-8">
+  <p className="text-sm">Balance</p>
+  <p className="text-lg font-bold">
+    {balance.toFixed(2)} {currency?.symbol || ""}
+  </p>
+</div>
       </div>
 
       {/* Tarjeta 2 - Modo oscuro */}

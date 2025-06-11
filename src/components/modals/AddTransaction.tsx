@@ -16,7 +16,7 @@ import {
 import { useState } from "react";
 import { createTransaction } from '../../services/transactionService';
 import { categories } from "../../constants/categories";
-import { useTransactions } from "../../context/TransactionContext";
+import { useTransactions  } from "../../context/TransactionContext";
 
 export function matchCategoryId(description: string): number {
   const lowerDesc = description.toLowerCase();
@@ -39,7 +39,8 @@ const AddTransaction = ({ isOpen, onClose }: AddTransactionProps) => {
   const [description, setDescription] = useState("");
   const [type, setType] = useState<"deposit" | "withdrawal">("deposit");
   const [amount, setAmount] = useState("");
-  const { fetchTransactions } = useTransactions();
+  const { fetchTransactions, fetchAccountAndCurrency } = useTransactions();
+
   const toast = useToast();
 
 
@@ -66,8 +67,9 @@ const AddTransaction = ({ isOpen, onClose }: AddTransactionProps) => {
         transfer_id: null,
         createdAt: new Date().toISOString(),
       });
+      await fetchAccountAndCurrency(); 
       await fetchTransactions();
-      
+      //actualiza balance
       toast({
         title: "Transaction added.",
         status: "success",

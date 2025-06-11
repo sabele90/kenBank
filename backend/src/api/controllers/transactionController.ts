@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import { Transaction } from "../models/Transaction";
-
+import { Account } from "../models/Account";
 export const getAllTransactions = async (req: Request, res: Response) => {
   try {
     const transactions = await Transaction.findAll({
@@ -12,6 +12,27 @@ export const getAllTransactions = async (req: Request, res: Response) => {
     res.status(500).send((error as Error).message);
   }
 };
+export const getTransactionsByAccountId = async (req: Request, res: Response) => {
+  try {
+    const { account_id, offset = 0, limit = 20 } = req.query;
+
+    const where = account_id ? { account_id } : undefined;
+
+    const transactions = await Transaction.findAll({
+      where,
+      offset: Number(offset),
+      limit: Number(limit),
+      order: [["createdAt", "DESC"]],
+    });
+
+    res.status(200).json(transactions);
+  } catch (error) {
+    res.status(500).send((error as Error).message);
+  }
+};
+
+
+
 
 export const getOneTransaction = async (req: Request, res: Response) => {
   const { transaction_id } = req.params;
@@ -22,10 +43,33 @@ export const getOneTransaction = async (req: Request, res: Response) => {
 
 export const createTransaction = async (req: Request, res: Response) => {
   try {
-    const newTransaction = await Transaction.create(req.body);
-    res.status(201).json(newTransaction);
+    const { description, amount, account_id, category_id, transfer_id } = req.body;
+
+    // Crear la transacción
+    const transaction = await Transaction.create({
+      description,
+      amount,
+      account_id,
+      category_id,
+      transfer_id,
+    });
+
+    // Buscar cuenta
+    const account = await Account.findByPk(account_id);
+    if (!account) {
+     res.status(404).json({ message: "Account not found" });
+     return;
+    }
+
+    // Actualizar el balance
+    const currentBalance = Number(account.balance || 0);
+    const newBalance = currentBalance + Number(amount); // puede ser negativo o positivo
+    account.balance = newBalance;
+    await account.save();
+
+    res.status(201).json(transaction);
   } catch (error) {
-    res.status(400).send((error as Error).message);
+    res.status(500).send((error as Error).message);
   }
 };
 //INSERTAR VARIAS TRANSACCIONES

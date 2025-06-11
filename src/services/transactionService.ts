@@ -7,6 +7,20 @@ export const getAllTransactions = async () => {
     const res = await axios.get<Transaction[]>(API_URL);
     return res.data;
 };
+export const getTransactionsByAccountId = async (
+  accountId: number,
+  offset = 0,
+  limit = 20
+): Promise<Transaction[]> => {
+  const res = await axios.get<Transaction[]>(API_URL, {
+    params: {
+      account_id: accountId,
+      offset,
+      limit,
+    },
+  });
+  return res.data;
+};
 
 export const getOneTransaction = async (id: number) => {
   const res = await axios.get(`${API_URL}/${id}`);

@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import { User } from "../models/User";
-import { Account } from "../models/Account";
+
 
 // GET
 export const getAllUsers = async (req: Request, res: Response) => {
@@ -19,25 +19,6 @@ export const getUserById = async (req: Request, res: Response) => {
     const user = await User.findByPk(user_id);
     if (!user)  res.status(404).send("Not found");
     res.status(200).json(user);
-  };
-  export const getAccountsByUserId = async (req: Request, res: Response) => {
-    try {
-      const { user_id } = req.params;
-  
-      const user = await User.findByPk(user_id, {
-        include: [Account],
-      });
-  
-      if (!user) {
-        return res.status(404).json({ message: "User not found" });
-      }
-  
-      // Opcional: solo devolver las cuentas
-      res.status(200).json(user.accounts);
-    } catch (error) {
-      console.error("Error fetching accounts:", error);
-      res.status(500).json({ message: "Error fetching accounts" });
-    }
   };
 // POST
 export const createUser = async (req: Request, res: Response) => {

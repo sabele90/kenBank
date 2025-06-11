@@ -15,8 +15,6 @@ import { useRef } from "react";
 
 const TransactionActions = () => {
   const { isOpen, onOpen, onClose } = useDisclosure();
-  
-  // Color mode values
   const buttonBg = useColorModeValue("white", "gray.800");
   const buttonColor = useColorModeValue("gray.500", "gray.400");
   const hoverBg = useColorModeValue("gray.300", "gray.600");
