@@ -6,7 +6,8 @@ import {
   HStack,
   Spinner,
   Flex,
-  Select
+  Select,
+  Image,
 } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
 import { getUserById } from "../services/userService";
@@ -16,7 +17,9 @@ import { BiSolidUpArrow } from "react-icons/bi";
 import { CiMoneyCheck1 } from "react-icons/ci";
 import { BiSolidDownArrow } from "react-icons/bi";
 import type { Account } from "../types/Account";
-
+import EuroIcon from "../assets/euro.png";
+import KesIcon from "../assets/kes.png";
+import DarkModeSwitcher from "../components/DarkModeSwitcher";
 interface ProfileDashboardProps {
   setFilterType: React.Dispatch<
     React.SetStateAction<"all" | "income" | "outcome">
@@ -24,14 +27,11 @@ interface ProfileDashboardProps {
   filterType: "all" | "income" | "outcome";
 }
 
-const ProfileDashboard = ({
-  setFilterType,
-  filterType,
-}: ProfileDashboardProps) => {
+const ProfileDashboard = ({ setFilterType }: ProfileDashboardProps) => {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
 
-  const { transactions, account,accounts, setSelectedAccountId } =
+  const { transactions, account, accounts, setSelectedAccountId } =
     useTransactions();
 
   // Calcular ingresos totales y retiros
@@ -44,6 +44,17 @@ const ProfileDashboard = ({
     const amount = Number(tx.amount);
     return acc + (amount < 0 ? Math.abs(amount) : 0);
   }, 0);
+
+  const getCurrencyIcon = (code: string) => {
+    switch (code) {
+      case "EUR":
+        return EuroIcon;
+      case "KES":
+        return KesIcon;
+      default:
+        return "";
+    }
+  };
 
   useEffect(() => {
     const fetchUser = async () => {
@@ -79,65 +90,77 @@ const ProfileDashboard = ({
     <>
       <Box className="border-l border-gray-300 dark:border-gray-600 w-full h-full p-4">
         {/* User Info */}
-        <HStack justify="flex-start" mb={4} mt={6}>
-          <Avatar
-            size="md"
-            name={user?.name || "Avatar Image"}
-            src={user?.avatarUrl || "./avatar.png"}
-            borderRadius="lg"
-          />
-          <VStack align="start" spacing={0}>
-            <Text fontWeight="bold">{user?.name || "User Name"}</Text>
-            <Text fontSize="xs" color="gray.500 dark:gray-400">
-              {user?.email || "Email not available"}
-            </Text>
+        <HStack justify="space-between" mb={4} mt={6} w="100%">
+          {/* Izquierda: Avatar + Info */}
+          <HStack>
+            <Avatar
+              size="md"
+              name={user?.name || "Avatar Image"}
+              src={user?.avatarUrl || "./avatar.png"}
+              borderRadius="lg"
+            />
+            <VStack align="start" spacing={0}>
+              <Text fontWeight="bold">{user?.name || "User Name"}</Text>
+              <Text fontSize="xs" color="gray.500 dark:gray-400">
+                {user?.email || "Email not available"}
+              </Text>
+            </VStack>
+          </HStack>
+
+          {/* Derecha: Switcher */}
+          <VStack p={4}>
+            <DarkModeSwitcher />
           </VStack>
         </HStack>
-        <Select
-  placeholder="Select account"
-  value={account?.id}
-  onChange={(e) => setSelectedAccountId(Number(e.target.value))}
->
-  {accounts.map((acc: Account) => (
-    <option key={acc.id} value={acc.id}>
-       Cuenta {acc.id}
-    </option>
-  ))}
-</Select>
-        {/* Account Info */}
-        <HStack justify="space-between" mb={6}>
-          <Text fontWeight="bold" fontSize="lg">
-          {account?.currency?.name || ""} account
-          </Text>
-        </HStack>
 
+        <div className="flex  items-center mb-4 ">
+          {account?.currency?.code && (
+            <HStack>
+              <Image
+                className="w-10"
+                src={getCurrencyIcon(account.currency.code)}
+              />
+            </HStack>
+          )}
+
+          <Select
+            border="none"
+            boxShadow="none"
+            focusBorderColor="transparent"
+            value={account?.id}
+            fontWeight={"bold"}
+            fontSize={"lg"}
+            onChange={(e) => setSelectedAccountId(Number(e.target.value))}
+          >
+            {accounts.map((acc: Account) => (
+              <option key={acc.id} value={acc.id}>
+                {acc.currency?.name} account
+              </option>
+            ))}
+          </Select>
+        </div>
         {/* Cards */}
         <VStack spacing={4} mt={6}>
-          <Flex
-            w="100%"
-            bg={filterType === "all" ? "gray.200" : "gray.100"}
-            _dark={{ bg: filterType === "all" ? "gray.600" : "gray.700" }}
-            p={4}
-            borderRadius="lg"
-            align="center"
-            justify="space-between"
-            shadow="md"
-            cursor="pointer"
+          <div
             onClick={() => setFilterType("all")}
+            className="w-full p-4 rounded-xl cursor-pointer 
+             backdrop-blur-md 
+             bg-white/20 hover:bg-white/30 
+             dark:bg-slate-800/30 dark:hover:bg-slate-800/50 
+             transition-all duration-300 shadow-md flex justify-between items-center"
           >
-            <HStack>
-              <Box>
-                <CiMoneyCheck1 />
-              </Box>
-              <Box color="white"></Box>
-              <Text fontWeight="medium">Balance</Text>
-            </HStack>
-
-            <Text fontWeight="bold">
+            <div className="flex items-center gap-2">
+              <CiMoneyCheck1 className="text-xl" />
+              <span className="font-medium text-gray-800 dark:text-gray-100">
+                Balance
+              </span>
+            </div>
+            <span className="font-bold text-gray-900 dark:text-white">
               {account?.balance ? Number(account.balance).toFixed(2) : "0.00"}{" "}
               {account?.currency?.symbol || ""}
-            </Text>
-          </Flex>
+            </span>
+          </div>
+
           {/* Income Card */}
           <Flex
             w="100%"
@@ -151,7 +174,7 @@ const ProfileDashboard = ({
             onClick={() => setFilterType("income")}
           >
             <HStack>
-              <Box color="purple">
+              <Box color="purple" _dark={{ color: "purple.100" }}>
                 <BiSolidUpArrow />
               </Box>
               <Text fontWeight="medium">Income</Text>
@@ -174,7 +197,7 @@ const ProfileDashboard = ({
             onClick={() => setFilterType("outcome")}
           >
             <HStack>
-              <Box color="red">
+              <Box color="red.500" _dark={{ color: "red.100" }}>
                 <BiSolidDownArrow />
               </Box>
               <Text className=""> Outcome</Text>
@@ -184,7 +207,6 @@ const ProfileDashboard = ({
             </Text>
           </Flex>
         </VStack>
-
       </Box>
     </>
   );
