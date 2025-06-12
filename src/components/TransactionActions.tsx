@@ -23,19 +23,29 @@ import type { DatepickerConfigs } from "chakra-dayzed-datepicker";
 import { CiExport } from "react-icons/ci";
 import { RiResetLeftFill } from "react-icons/ri";
 import { IoCalendarOutline } from "react-icons/io5";
+import CsvExport from "../utils/CvsExport";
+
 
 type TransactionActionsProps = {
   onDateRangeChange: Dispatch<SetStateAction<Date[]>>;
   onResetFilterType: Dispatch<SetStateAction<"all" | "income" | "outcome">>;
 };
 
-const TransactionActions = ({ onDateRangeChange, onResetFilterType }: TransactionActionsProps) => {
+const TransactionActions = ({
+  onDateRangeChange,
+  onResetFilterType,
+}: TransactionActionsProps) => {
   const { isOpen, onOpen, onClose } = useDisclosure();
-  const { isOpen: isDateModalOpen, onOpen: onDateModalOpen, onClose: onDateModalClose } = useDisclosure();
+  const {
+    isOpen: isDateModalOpen,
+    onOpen: onDateModalOpen,
+    onClose: onDateModalClose,
+  } = useDisclosure();
   const buttonBg = useColorModeValue("white", "gray.800");
   const buttonColor = useColorModeValue("gray.500", "gray.400");
   const hoverBg = useColorModeValue("gray.300", "gray.600");
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const exportCsv = CsvExport();
 
   // Fechas por defecto: últimos 30 días
   const getDefaultDateRange = () => {
@@ -67,8 +77,18 @@ const TransactionActions = ({ onDateRangeChange, onResetFilterType }: Transactio
     dateFormat: "dd/MM/yyyy",
     dayNames: ["Dom", "Lun", "Mar", "Mié", "Jue", "Vie", "Sáb"],
     monthNames: [
-      "Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio",
-      "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"
+      "Enero",
+      "Febrero",
+      "Marzo",
+      "Abril",
+      "Mayo",
+      "Junio",
+      "Julio",
+      "Agosto",
+      "Septiembre",
+      "Octubre",
+      "Noviembre",
+      "Diciembre",
     ],
     firstDayOfWeek: 0,
   };
@@ -89,7 +109,7 @@ const TransactionActions = ({ onDateRangeChange, onResetFilterType }: Transactio
             onClick={onDateModalOpen}
           />
         </Tooltip>
-      
+
         <Tooltip label="Reset Data" hasArrow>
           <IconButton
             aria-label="Reset"
@@ -124,32 +144,21 @@ const TransactionActions = ({ onDateRangeChange, onResetFilterType }: Transactio
         </Tooltip>
 
         <Tooltip label="Export CSV" hasArrow>
-          <IconButton
-            aria-label="Export CSV"
-            icon={<CiExport />}
-            size="md"
-            bg={buttonBg}
-            color={buttonColor}
-            borderRadius="full"
-            variant="outline"
-            _hover={{ bg: hoverBg, color: buttonBg }}
-            onClick={() => fileInputRef.current?.click()}
-          />
-        </Tooltip>
+  <IconButton
+    aria-label="Export CSV"
+    icon={<CiExport />}
+    size="md"
+    bg={buttonBg}
+    color={buttonColor}
+    borderRadius="full"
+    variant="outline"
+    _hover={{ bg: hoverBg, color: buttonBg }}
+    onClick={exportCsv} 
+  />
+</Tooltip>
 
-        <Tooltip label="Add transaction manually" hasArrow>
-          <IconButton
-            aria-label="Add transaction manually"
-            icon={<IoAddOutline />}
-            bg={buttonBg}
-            size="md"
-            borderRadius="full"
-            variant="outline"
-            color={buttonColor}
-            _hover={{ bg: hoverBg, color: buttonBg }}
-            onClick={onOpen}
-          />
-        </Tooltip>
+
+        
       </HStack>
 
       {/* Modal para el selector de fechas */}
@@ -159,18 +168,18 @@ const TransactionActions = ({ onDateRangeChange, onResetFilterType }: Transactio
           <ModalHeader>Select dates</ModalHeader>
           <ModalCloseButton />
           <ModalBody pb={6}>
-  <Flex justify="center" align="center" direction="column">
-    <RangeDatepicker
-      selectedDates={dateRange}
-      onDateChange={handleDateChange}
-      configs={datePickerConfigs}
-    />
-  </Flex>
-</ModalBody>
+            <Flex justify="center" align="center" direction="column">
+              <RangeDatepicker
+                selectedDates={dateRange}
+                onDateChange={handleDateChange}
+                configs={datePickerConfigs}
+              />
+            </Flex>
+          </ModalBody>
         </ModalContent>
       </Modal>
 
-      <AddTransaction isOpen={isOpen} onClose={onClose} />
+   
       <CsvImport ref={fileInputRef} />
     </>
   );

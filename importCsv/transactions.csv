@@ -1,0 +1,5 @@
+description,amount,account_id,transfer_id,created_at
+Food,-50,1,,2025-06-09 15:32:01
+Transport,10,1,,2025-06-09 15:32:01
+Income,500,1,,2025-06-09 15:32:01
+Doctor,100,1,,09/06/2025 15:32:01

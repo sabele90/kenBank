@@ -5,9 +5,11 @@ import type { Transaction } from "../types/Transaction";
 import { useTransactions } from "../context/TransactionContext";
 import { uploadTransactions } from "../services/transactionService";
 import { matchCategoryId } from "../components/modals/AddTransaction";
+import { useToast } from "@chakra-ui/react";
 
 const CsvImport = forwardRef<HTMLInputElement>((_, ref) => {
-  const { fetchTransactions } = useTransactions(); // Mueve el hook al nivel superior del componente
+  const toast = useToast();
+  const { fetchTransactions } = useTransactions();
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -18,21 +20,36 @@ const CsvImport = forwardRef<HTMLInputElement>((_, ref) => {
       skipEmptyLines: true,
       complete: async (results: ParseResult<Transaction>) => {
         try {
-          const transactions = results.data.map((row : Transaction) => ({
-            description: row.description || "No description", // Valor predeterminado si falta la descripción
-            amount: row.amount ? Number(row.amount) : 0, // Valor predeterminado si falta el monto
-            account_id: row.account_id || 1, // Valor predeterminado para account_id
-            category_id: matchCategoryId(row.description || "Other"), // Asigna category_id dinámicamente
-            createdAt: row.createdAt || new Date().toISOString(), // Fecha predeterminada si no está presente
-            transfer_id: row.transfer_id || null, // Valor predeterminado para transfer_id
+          const transactions = results.data.map((row: Transaction) => ({
+            description: row.description || "No description",
+            amount: row.amount ? Number(row.amount) : 0,
+            account_id: row.account_id || 1,
+            category_id: matchCategoryId(row.description || "Other"),
+            created_at: row.created_at || new Date().toISOString(),
+            transfer_id: row.transfer_id || null,
           }));
 
           await uploadTransactions(transactions);
           await fetchTransactions();
-          alert("Transacciones importadas correctamente.");
+
+          toast({
+            title: "Import successful",
+            description: "Transactions imported successfully.",
+            status: "success",
+            duration: 5000,
+            isClosable: true,
+         
+          });
         } catch (error) {
-          console.error("Error al importar:", error);
-          alert("Error al importar.");
+          console.error("Import error:", error);
+          toast({
+            title: "Import failed",
+            description: "There was an error importing the transactions.",
+            status: "error",
+            duration: 5000,
+            isClosable: true,
+        
+          });
         }
       },
     });
@@ -43,7 +60,7 @@ const CsvImport = forwardRef<HTMLInputElement>((_, ref) => {
       type="file"
       accept=".csv"
       onChange={handleFileChange}
-      ref={ref} // Asigna la referencia al input
+      ref={ref}
       hidden
     />
   );

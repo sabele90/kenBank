@@ -1,58 +1,49 @@
 import {
-  Box,
-  Avatar,
-  Text,
-  VStack,
   HStack,
-  Spinner,
+  IconButton,
+  Tooltip,
+  useDisclosure,
+  useColorModeValue,
+  Modal,
+  ModalOverlay,
+  ModalContent,
+  ModalHeader,
+  ModalBody,
+  ModalCloseButton,
   Flex,
-  Select,
-  Image,
 } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
 import { getUserById } from "../services/userService";
 import type { User } from "../types/User";
 import { useTransactions } from "../context/TransactionContext";
-import { BiSolidUpArrow } from "react-icons/bi";
+import { BiSolidUpArrow, BiSolidDownArrow } from "react-icons/bi";
 import { CiMoneyCheck1 } from "react-icons/ci";
-import { BiSolidDownArrow } from "react-icons/bi";
-import type { Account } from "../types/Account";
 import EuroIcon from "../assets/euro.png";
 import KesIcon from "../assets/kes.png";
 import DarkModeSwitcher from "../components/DarkModeSwitcher";
+import { IoMdAdd } from "react-icons/io";
+import { IoAddOutline, IoAddCircleOutline } from "react-icons/io5";
+import type { Account } from "../types/Account";
+import AddTransaction from "./modals/AddTransaction";
 interface ProfileDashboardProps {
-  setFilterType: React.Dispatch<
-    React.SetStateAction<"all" | "income" | "outcome">
-  >;
+  setFilterType: React.Dispatch<React.SetStateAction<"all" | "income" | "outcome">>;
   filterType: "all" | "income" | "outcome";
 }
 
 const ProfileDashboard = ({ setFilterType }: ProfileDashboardProps) => {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
+  const { isOpen, onOpen, onClose } = useDisclosure();
+  const { transactions, account, accounts, setSelectedAccountId } = useTransactions();
 
-  const { transactions, account, accounts, setSelectedAccountId } =
-    useTransactions();
-
-  // Calcular ingresos totales y retiros
-  const totalIncome = transactions.reduce((acc, tx) => {
-    const amount = Number(tx.amount);
-    return acc + (amount > 0 ? amount : 0);
-  }, 0);
-
-  const totalOutcome = transactions.reduce((acc, tx) => {
-    const amount = Number(tx.amount);
-    return acc + (amount < 0 ? Math.abs(amount) : 0);
-  }, 0);
+  const totalIncome = transactions.reduce((acc, tx) => acc + (Number(tx.amount) > 0 ? Number(tx.amount) : 0), 0);
+  const totalOutcome = transactions.reduce((acc, tx) => acc + (Number(tx.amount) < 0 ? Math.abs(Number(tx.amount)) : 0), 0);
 
   const getCurrencyIcon = (code: string) => {
     switch (code) {
-      case "EUR":
-        return EuroIcon;
-      case "KES":
-        return KesIcon;
-      default:
-        return "";
+      case "EUR": return EuroIcon;
+      case "KES": return KesIcon;
+      default: return "";
     }
   };
 
@@ -61,7 +52,6 @@ const ProfileDashboard = ({ setFilterType }: ProfileDashboardProps) => {
       try {
         const userData = await getUserById(1);
         setUser(userData);
-        console.log("User data fetched:", userData);
       } catch (error) {
         console.error("Error fetching user:", error);
       } finally {
@@ -74,62 +64,43 @@ const ProfileDashboard = ({ setFilterType }: ProfileDashboardProps) => {
 
   if (loading) {
     return (
-      <Box
-        w="100%"
-        h="100%"
-        display="flex"
-        justifyContent="center"
-        alignItems="center"
-      >
-        <Spinner size="lg" />
-      </Box>
+      <div className="w-full h-full flex justify-center items-center">
+        <div className="animate-spin h-8 w-8 border-4 border-blue-500 border-t-transparent rounded-full"></div>
+      </div>
     );
   }
 
   return (
     <>
-      <Box className="border-l border-gray-300 dark:border-gray-600 w-full h-full p-4">
+    <div className="border-l border-gray-300 dark:border-gray-600 w-full h-full p-4 flex flex-col">
+      {/* Main Content */}
+      <div className="flex-grow">
         {/* User Info */}
-        <HStack justify="space-between" mb={4} mt={6} w="100%">
-          {/* Izquierda: Avatar + Info */}
-          <HStack>
-            <Avatar
-              size="md"
-              name={user?.name || "Avatar Image"}
+        <div className="flex justify-between mb-4 mt-6 w-full">
+          <div className="flex items-center space-x-4">
+            <img
+              className="w-10 h-10 rounded-lg"
               src={user?.avatarUrl || "./avatar.png"}
-              borderRadius="lg"
+              alt="Avatar"
             />
-            <VStack align="start" spacing={0}>
-              <Text fontWeight="bold">{user?.name || "User Name"}</Text>
-              <Text fontSize="xs" color="gray.500 dark:gray-400">
-                {user?.email || "Email not available"}
-              </Text>
-            </VStack>
-          </HStack>
-
-          {/* Derecha: Switcher */}
-          <VStack p={4}>
+            <div className="flex flex-col">
+              <span className="font-bold">{user?.name || "User Name"}</span>
+              <span className="text-xs text-gray-500 dark:text-gray-400">{user?.email || "Email not available"}</span>
+            </div>
+          </div>
+          <div className="p-4">
             <DarkModeSwitcher />
-          </VStack>
-        </HStack>
-
-        <div className="flex  items-center mb-4 ">
+          </div>
+        </div>
+  
+        {/* Currency & Account Selector */}
+        <div className="flex items-center mb-4 gap-2">
           {account?.currency?.code && (
-            <HStack>
-              <Image
-                className="w-10"
-                src={getCurrencyIcon(account.currency.code)}
-              />
-            </HStack>
+            <img className="w-10" src={getCurrencyIcon(account.currency.code)} />
           )}
-
-          <Select
-            border="none"
-            boxShadow="none"
-            focusBorderColor="transparent"
+          <select
+            className="font-bold text-lg bg-transparent outline-none border-none"
             value={account?.id}
-            fontWeight={"bold"}
-            fontSize={"lg"}
             onChange={(e) => setSelectedAccountId(Number(e.target.value))}
           >
             {accounts.map((acc: Account) => (
@@ -137,79 +108,79 @@ const ProfileDashboard = ({ setFilterType }: ProfileDashboardProps) => {
                 {acc.currency?.name} account
               </option>
             ))}
-          </Select>
+          </select>
         </div>
+  
         {/* Cards */}
-        <VStack spacing={4} mt={6}>
+        <div className="flex flex-col gap-4 mt-6">
           <div
             onClick={() => setFilterType("all")}
-            className="w-full p-4 rounded-xl cursor-pointer 
-             backdrop-blur-md 
-             bg-white/20 hover:bg-white/30 
-             dark:bg-slate-800/30 dark:hover:bg-slate-800/50 
-             transition-all duration-300 shadow-md flex justify-between items-center"
+            className="w-full p-6 rounded-xl cursor-pointer backdrop-blur-md bg-white/20 hover:bg-white/30 dark:bg-slate-800/30 dark:hover:bg-slate-800/50 transition-all duration-300 shadow-md flex justify-between items-center"
           >
             <div className="flex items-center gap-2">
               <CiMoneyCheck1 className="text-xl" />
-              <span className="font-medium text-gray-800 dark:text-gray-100">
-                Balance
-              </span>
+              <span className="font-medium text-gray-800 dark:text-gray-100">Balance</span>
             </div>
             <span className="font-bold text-gray-900 dark:text-white">
-              {account?.balance ? Number(account.balance).toFixed(2) : "0.00"}{" "}
-              {account?.currency?.symbol || ""}
+              {account?.balance ? Number(account.balance).toFixed(2) : "0.00"} {account?.currency?.symbol || ""}
             </span>
           </div>
-
-          {/* Income Card */}
-          <Flex
-            w="100%"
-            bg="purple.100"
-            _dark={{ bg: "purple.700" }}
-            p={4}
-            borderRadius="lg"
-            align="center"
-            justify="space-between"
-            shadow="md"
+  
+          <div
+            className="w-full p-6 rounded-lg shadow-md flex justify-between items-center bg-purple-100 dark:bg-purple-700 cursor-pointer hover:bg-purple-200 dark:hover:bg-purple-800"
             onClick={() => setFilterType("income")}
           >
-            <HStack>
-              <Box color="purple" _dark={{ color: "purple.100" }}>
-                <BiSolidUpArrow />
-              </Box>
-              <Text fontWeight="medium">Income</Text>
-            </HStack>
-            <Text fontWeight="bold">
+            <div className="flex items-center gap-2 text-purple-600 dark:text-purple-100">
+              <BiSolidUpArrow />
+              <span className="font-medium">Income</span>
+            </div>
+            <span className="font-bold">
               {totalIncome.toFixed(2)} {account?.currency?.symbol || ""}
-            </Text>
-          </Flex>
-
-          {/* Outcome Card */}
-          <Flex
-            w="100%"
-            bg="red.100"
-            _dark={{ bg: "red.700" }}
-            p={4}
-            borderRadius="lg"
-            align="center"
-            justify="space-between"
-            shadow="md"
+            </span>
+          </div>
+  
+          <div
+            className="w-full p-6 rounded-lg shadow-md flex justify-between items-center bg-red-100 dark:bg-red-700 cursor-pointer hover:bg-red-200 dark:hover:bg-red-800"
             onClick={() => setFilterType("outcome")}
           >
-            <HStack>
-              <Box color="red.500" _dark={{ color: "red.100" }}>
-                <BiSolidDownArrow />
-              </Box>
-              <Text className=""> Outcome</Text>
-            </HStack>
-            <Text fontWeight="bold">
+            <div className="flex items-center gap-2 text-red-500 dark:text-red-100">
+              <BiSolidDownArrow />
+              <span>Outcome</span>
+            </div>
+            <span className="font-bold">
               {totalOutcome.toFixed(2)} {account?.currency?.symbol || ""}
-            </Text>
-          </Flex>
-        </VStack>
-      </Box>
-    </>
+            </span>
+          </div>
+        </div>
+      </div>
+  
+      {/* importar csv aqui */}
+      {/* <div className="ml-8 mr-8 mb-4">
+        <button
+            onClick={onOpen}
+          className="w-full p-3 rounded-lg shadow-md flex justify-start items-center bg-blue-500 dark:bg-blue-500 hover:bg-blue-700 dark:hover:bg-blue-600 text-white gap-3"
+        >
+          <IoMdAdd className="text-2xl" />
+        
+          <span>Add transaction</span>
+        </button>
+      </div> */}
+
+      <div className="ml-8 mr-8 mb-8">
+        <button
+            onClick={onOpen}
+          className="w-full p-3 rounded-lg shadow-md flex justify-start items-center bg-blue-500 dark:bg-blue-500 hover:bg-blue-700 dark:hover:bg-blue-600 text-white gap-3"
+        >
+          <IoMdAdd className="text-2xl" />
+        
+          <span>Add transaction</span>
+        </button>
+      </div>
+    </div>
+      <AddTransaction isOpen={isOpen} onClose={onClose} />
+      </>
   );
+  
 };
 
 export default ProfileDashboard;

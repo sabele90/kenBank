@@ -92,7 +92,7 @@ import {
           account_id: 1,
           category_id,
           transfer_id: null,
-          createdAt: new Date().toISOString(),
+          created_at: new Date().toISOString(),
           id: transactionId,
         });
         await fetchTransactions();
