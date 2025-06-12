@@ -39,7 +39,7 @@ const AddTransaction = ({ isOpen, onClose }: AddTransactionProps) => {
   const [description, setDescription] = useState("");
   const [type, setType] = useState<"deposit" | "withdrawal">("deposit");
   const [amount, setAmount] = useState("");
-  const { fetchTransactions, fetchAccountAndCurrency } = useTransactions();
+  const { fetchTransactions } = useTransactions();
 
   const toast = useToast();
 
@@ -67,7 +67,7 @@ const AddTransaction = ({ isOpen, onClose }: AddTransactionProps) => {
         transfer_id: null,
         createdAt: new Date().toISOString(),
       });
-      await fetchAccountAndCurrency(); 
+     
       await fetchTransactions();
       //actualiza balance
       toast({
