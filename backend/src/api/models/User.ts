@@ -6,7 +6,7 @@ export class User extends Model {
   public name?: string;
   public email?: string;
   public phone?: string;
-  public avatarUrl?: string;
+  public avatar_url?: string;
 }
 
 User.init(
@@ -14,31 +14,32 @@ User.init(
     id: {
       type: DataTypes.INTEGER,
       primaryKey: true,
-      autoIncrement: true,
+      autoIncrement: true, 
     },
     name: {
       type: DataTypes.STRING,
-      allowNull: true, 
+      allowNull: true,
     },
     email: {
       type: DataTypes.STRING,
-      allowNull: true, 
+      allowNull: true,
     },
     phone: {
       type: DataTypes.STRING,
-      allowNull: true, 
+      allowNull: true,
     },
-    avatarUrl: {
+    avatar_url: {
       type: DataTypes.STRING,
-      allowNull: true, 
+      allowNull: true,
+      field: "avatar_url",
     },
   },
   {
     sequelize,
     modelName: "User",
     tableName: "users",
-    timestamps: false, 
-    underscored: false,
+    timestamps: false,
+    underscored: true, 
   }
 );
 

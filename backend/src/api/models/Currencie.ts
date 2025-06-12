@@ -20,6 +20,7 @@ Currencie.init(
     code: {
       type: DataTypes.STRING,
       allowNull: false, 
+      unique: true,
     },
     name: {
       type: DataTypes.STRING,
@@ -43,7 +44,7 @@ Currencie.init(
     modelName: "Currencie", 
     tableName: "currencies", 
     timestamps: false, 
-    underscored: false, 
+    underscored: true, 
   }
 );
 

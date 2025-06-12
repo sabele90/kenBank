@@ -17,14 +17,14 @@ Transaction.init(
     id: {
       type: DataTypes.INTEGER,
       primaryKey: true,
-      autoIncrement: true, 
+      autoIncrement: true,
     },
     description: {
       type: DataTypes.STRING,
       allowNull: true,
     },
     amount: {
-      type: DataTypes.DECIMAL(10, 0),
+      type: DataTypes.DECIMAL(10, 2),
       allowNull: true,
     },
     account_id: {
@@ -39,12 +39,20 @@ Transaction.init(
       type: DataTypes.STRING,
       allowNull: true,
     },
+    createdAt: {
+      type: DataTypes.DATE,
+      field: 'created_at',
+    },
+    updatedAt: {
+      type: DataTypes.DATE,
+      field: 'updated_at',
+    },
   },
   {
     sequelize,
     modelName: "Transaction",
     tableName: "transactions",
-    timestamps: true, 
-    underscored: false,
+    timestamps: true,
+    underscored: true, 
   }
 );

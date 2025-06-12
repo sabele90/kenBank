@@ -55,7 +55,7 @@ Account.init(
     modelName: "Account", 
     tableName: "accounts", 
     timestamps: false, 
-    underscored: false, 
+    underscored: true, 
   }
 );
 

@@ -1,6 +1,6 @@
 import dotenv from "dotenv";
 dotenv.config();
-
+import { sequelize } from "../db";
 import express from "express";
 import cors from "cors";
 import morgan from "morgan";
@@ -14,6 +14,9 @@ import { checkConnection } from "../db";
 
 async function connectDB(): Promise<void> {
   await checkConnection();
+    // 🔁 Sincroniza los modelos con la base de datos
+    await sequelize.sync({ alter: true }); // o { force: true } en desarrollo
+    console.log("📦 Base de datos sincronizada");
 }
 
 function launchServer(): void {
