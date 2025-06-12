@@ -6,13 +6,17 @@ import {
   HStack,
   Spinner,
   Flex,
+  Select
 } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
 import { getUserById } from "../services/userService";
 import type { User } from "../types/User";
 import { useTransactions } from "../context/TransactionContext";
 import { BiSolidUpArrow } from "react-icons/bi";
+import { CiMoneyCheck1 } from "react-icons/ci";
 import { BiSolidDownArrow } from "react-icons/bi";
+import type { Account } from "../types/Account";
+
 interface ProfileDashboardProps {
   setFilterType: React.Dispatch<
     React.SetStateAction<"all" | "income" | "outcome">
@@ -24,22 +28,20 @@ const ProfileDashboard = ({
   setFilterType,
   filterType,
 }: ProfileDashboardProps) => {
-
-
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
 
-  const { transactions, currency, account, setSelectedAccountId } =
+  const { transactions, account,accounts, setSelectedAccountId } =
     useTransactions();
 
   // Calcular ingresos totales y retiros
   const totalIncome = transactions.reduce((acc, tx) => {
-    const amount = Number(tx.amount); 
+    const amount = Number(tx.amount);
     return acc + (amount > 0 ? amount : 0);
   }, 0);
 
   const totalOutcome = transactions.reduce((acc, tx) => {
-    const amount = Number(tx.amount); 
+    const amount = Number(tx.amount);
     return acc + (amount < 0 ? Math.abs(amount) : 0);
   }, 0);
 
@@ -75,13 +77,7 @@ const ProfileDashboard = ({
 
   return (
     <>
-      <Box
-        w="100%"
-        h="100%"
-        p={4}
-        borderLeft={"1px solid"}
-        borderColor={"gray.300"}
-      >
+      <Box className="border-l border-gray-300 dark:border-gray-600 w-full h-full p-4">
         {/* User Info */}
         <HStack justify="flex-start" mb={4} mt={6}>
           <Avatar
@@ -97,11 +93,21 @@ const ProfileDashboard = ({
             </Text>
           </VStack>
         </HStack>
-
+        <Select
+  placeholder="Select account"
+  value={account?.id}
+  onChange={(e) => setSelectedAccountId(Number(e.target.value))}
+>
+  {accounts.map((acc: Account) => (
+    <option key={acc.id} value={acc.id}>
+       Cuenta {acc.id}
+    </option>
+  ))}
+</Select>
         {/* Account Info */}
         <HStack justify="space-between" mb={6}>
           <Text fontWeight="bold" fontSize="lg">
-            {currency?.name || ""} account
+          {account?.currency?.name || ""} account
           </Text>
         </HStack>
 
@@ -120,12 +126,16 @@ const ProfileDashboard = ({
             onClick={() => setFilterType("all")}
           >
             <HStack>
+              <Box>
+                <CiMoneyCheck1 />
+              </Box>
               <Box color="white"></Box>
               <Text fontWeight="medium">Balance</Text>
             </HStack>
+
             <Text fontWeight="bold">
               {account?.balance ? Number(account.balance).toFixed(2) : "0.00"}{" "}
-              {currency?.symbol || ""}
+              {account?.currency?.symbol || ""}
             </Text>
           </Flex>
           {/* Income Card */}
@@ -147,7 +157,7 @@ const ProfileDashboard = ({
               <Text fontWeight="medium">Income</Text>
             </HStack>
             <Text fontWeight="bold">
-              {totalIncome.toFixed(2)} {currency?.symbol || ""}
+              {totalIncome.toFixed(2)} {account?.currency?.symbol || ""}
             </Text>
           </Flex>
 
@@ -170,13 +180,11 @@ const ProfileDashboard = ({
               <Text className=""> Outcome</Text>
             </HStack>
             <Text fontWeight="bold">
-              {totalOutcome.toFixed(2)} {currency?.symbol || ""}
+              {totalOutcome.toFixed(2)} {account?.currency?.symbol || ""}
             </Text>
           </Flex>
         </VStack>
-        <button onClick={() => setSelectedAccountId(2)}>
-          Cambiar a cuenta USD
-        </button>
+
       </Box>
     </>
   );

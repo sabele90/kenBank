@@ -1,45 +1,65 @@
 import { createContext, useContext, useEffect, useState } from "react";
-import { getTransactionsByAccountId } from "../services/transactionService"
+import { getTransactionsByAccountId } from "../services/transactionService";
 import type { Transaction } from "../types/Transaction";
-import { getAccountById } from "../services/accountService";
 import type { Account } from "../types/Account";
-import { getCurrencieById } from "../services/currencieService";
 import type { Currencie } from "../types/Currencie";
 import { useCallback } from "react";
-
+import { getAccountsByUserId } from "../services/accountService"; // asegúrate de tener esto
 
 interface TransactionContextType {
   transactions: Transaction[];
   loading: boolean;
-  fetchTransactions: (append?: boolean) => Promise<void>; 
+  fetchTransactions: (append?: boolean) => Promise<void>;
   account: Account | null;
-  setAccount: (account: Account | null) => void; 
+  accounts: Account[];
+  setAccount: (account: Account | null) => void;
   currency: Currencie | null;
   setSelectedAccountId: (id: number) => void;
-  loadMoreTransactions: () => void; 
-  fetchAccountAndCurrency: () => Promise<void>;   
-  hasMore: boolean;                  
+  loadMoreTransactions: () => void;
+  fetchAccountsByUser: (userId: number) => Promise<void>;
+  hasMore: boolean;
 }
 
+const TransactionContext = createContext<TransactionContextType | undefined>(
+  undefined
+);
 
-const TransactionContext = createContext<TransactionContextType | undefined>(undefined);
-
-export const TransactionProvider = ({ children }: { children: React.ReactNode }) => {
+export const TransactionProvider = ({
+  children,
+}: {
+  children: React.ReactNode;
+}) => {
   const [selectedAccountId, setSelectedAccountId] = useState<number>(1); // por defecto 1
-
   const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [loading, setLoading] = useState(true);
-    const [account, setAccount] = useState<Account | null>(null);
-    const [currency, setCurrency] = useState<Currencie | null>(null);
-    const [offset, setOffset] = useState(0);
-const [hasMore, setHasMore] = useState(true);
+  const [account, setAccount] = useState<Account | null>(null);
+  const [accounts, setAccounts] = useState<Account[]>([]);
+  const [currency, setCurrency] = useState<Currencie | null>(null);
+  const [offset, setOffset] = useState(0);
+  const [hasMore, setHasMore] = useState(true);
 
-
-const fetchTransactions = useCallback(async () => {
+  const fetchAccounts = useCallback(async () => {
+    try {
+      const data = await getAccountsByUserId(1); // usuario 1 por ahora
+      console.log("sara", data);
+      setAccounts(data);
+    } catch (error) {
+      console.error("Failed to fetch user accounts", error);
+    }
+  }, []);
+  const fetchAccountsByUser = useCallback(async (userId: number) => {
+    try {
+      const res = await getAccountsByUserId(userId);
+      setAccounts(res);
+    } catch (error) {
+      console.error("Error fetching user accounts:", error);
+    }
+  }, []);
+  const fetchTransactions = useCallback(async () => {
     try {
       const data = await getTransactionsByAccountId(selectedAccountId, 0);
-      setTransactions(data)
-        setOffset(20); 
+      setTransactions(data);
+      setOffset(20);
       setHasMore(data.length === 20);
     } catch (err) {
       console.error("Failed to fetch transactions:", err);
@@ -50,7 +70,7 @@ const fetchTransactions = useCallback(async () => {
   const loadMoreTransactions = useCallback(async () => {
     try {
       const data = await getTransactionsByAccountId(selectedAccountId, offset);
-      setTransactions((prev) => [...prev, ...data]); 
+      setTransactions((prev) => [...prev, ...data]);
       setOffset((prev) => prev + 20);
       setHasMore(data.length === 20);
     } catch (err) {
@@ -58,31 +78,34 @@ const fetchTransactions = useCallback(async () => {
     }
   }, [selectedAccountId, offset]);
 
-  const fetchAccountAndCurrency = useCallback(async () => {
-    try {
-      const accountData = await getAccountById(selectedAccountId);
-      setAccount(accountData);
-  
-      if (accountData.currency_id) {
-        const currencyData = await getCurrencieById(accountData.currency_id);
-        setCurrency(currencyData);
-      }
-    } catch (error) {
-      console.error("Error fetching account or currency:", error);
-    }
-  }, [selectedAccountId]);
   useEffect(() => {
-    setOffset(0); // reiniciar si se cambia de cuenta
-    setTransactions([]); //reiniicar las cuentas
-    fetchAccountAndCurrency();//apunta a la cuenta y me trae la moneda
+    const selected =
+      accounts.find((acc) => acc.id === selectedAccountId) || null;
+    setAccount(selected);
+    setCurrency(selected?.currency || null);
+  }, [accounts, selectedAccountId]);
+
+  useEffect(() => {
+    fetchAccounts();
     fetchTransactions();
-  }, [selectedAccountId, fetchAccountAndCurrency, fetchTransactions]);
-  
- 
-  
+  }, [fetchAccounts, fetchTransactions, selectedAccountId]);
 
   return (
-    <TransactionContext.Provider value={{ transactions, loading, fetchTransactions , account, currency ,setSelectedAccountId, loadMoreTransactions,    hasMore, setAccount, fetchAccountAndCurrency }}>
+    <TransactionContext.Provider
+      value={{
+        transactions,
+        loading,
+        fetchTransactions,
+        account,
+        currency,
+        setSelectedAccountId,
+        loadMoreTransactions,
+        hasMore,
+        setAccount,
+        accounts,
+        fetchAccountsByUser,
+      }}
+    >
       {children}
     </TransactionContext.Provider>
   );
@@ -91,7 +114,9 @@ const fetchTransactions = useCallback(async () => {
 export const useTransactions = () => {
   const context = useContext(TransactionContext);
   if (!context) {
-    throw new Error("useTransactions must be used within a TransactionProvider");
+    throw new Error(
+      "useTransactions must be used within a TransactionProvider"
+    );
   }
   return context;
 };

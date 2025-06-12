@@ -1,3 +1,5 @@
+import type { Currencie } from "./Currencie";
+
 export interface Account {
     id?: number; 
     bank_id: number; 
@@ -7,4 +9,5 @@ export interface Account {
     status?: string; 
     created_at?: Date; 
     balance?: number;
+    currency?: Currencie;
   }

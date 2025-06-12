@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
 import Account from "../models/Account";
+import Currencie from "../models/Currencie";
 
 // GET
 export const getAllAccounts = async (req: Request, res: Response) => {
@@ -30,14 +31,15 @@ export const getAccountsByUserId = async (req: Request, res: Response) => {
     const { user_id } = req.params;
     const accounts = await Account.findAll({
       where: { user_id },
+      include: [{ model: Currencie, as: "currency" }],
     });
 
     if (!accounts.length) {
       res.status(404).json({ message: "No accounts found for this user" });
       return;
     }
+    res.status(200).json(accounts.map(account => account.toJSON()));
 
-    res.status(200).json(accounts);
   } catch (error) {
     res.status(500).send((error as Error).message);
   }

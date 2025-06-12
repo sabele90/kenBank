@@ -8,11 +8,6 @@ export const getAllUsers = async () => {
   const res = await axios.get<User[]>(API_URL);
   return res.data;
 };
-export const getAccountsByUserId = async (userId: number) => {
-  const res = await axios.get(`/api/users/${userId}/account`);
-  return res.data;
-};
-
 // GET: Obtener un usuario por ID
 export const getUserById = async (id: number) => {
   const res = await axios.get(`${API_URL}/${id}`);

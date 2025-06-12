@@ -1,6 +1,7 @@
 import { DataTypes, Model } from "sequelize";
 import { sequelize } from "../../db/index";
 
+
 export class Account extends Model {
   public id!: number;
   public bank_id!: number;
@@ -57,5 +58,6 @@ Account.init(
     underscored: false, 
   }
 );
+
 
 export default Account;

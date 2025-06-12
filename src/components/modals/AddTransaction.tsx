@@ -80,6 +80,7 @@ const AddTransaction = ({ isOpen, onClose }: AddTransactionProps) => {
       // reset form y cerrar modal
       setDescription("");
       setAmount("");
+      //abrir nuevo modal , por defecto = deposit
       setType("deposit");
       onClose();
     } catch (error) {

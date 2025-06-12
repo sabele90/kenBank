@@ -11,10 +11,14 @@ const TransactionList = ({
   searchTerm,
   filterType = "all",
   sortOrder,
+  dateRange, 
 }: {
   searchTerm: string;
   filterType?: "all" | "income" | "outcome";
   sortOrder: "asc" | "desc";
+  dateRange?: Date[];
+
+
 }) => {
   const { transactions, loading, loadMoreTransactions, hasMore } =
     useTransactions();
@@ -35,7 +39,11 @@ const TransactionList = ({
     onClose: onEditClose,
   } = useDisclosure();
 
-  if (loading) return <Spinner />;
+  if (loading) return 
+  <div className="bg-black">
+  <Spinner />
+  </div>;
+
 
   // Filtrar y ordenar
   const filteredTransactions = transactions
@@ -46,7 +54,22 @@ const TransactionList = ({
       if (filterType === "income") return tx.amount > 0;
       if (filterType === "outcome") return tx.amount < 0;
       return true;
-    });
+    })
+    .filter((tx) => {
+      if (!dateRange || dateRange.length < 2) return true;
+      
+      const txDate = new Date(tx.createdAt);
+      const startDate = new Date(dateRange[0]);
+      const endDate = new Date(dateRange[1]);
+      
+      // Normalizar fechas para comparar solo días
+      txDate.setHours(0, 0, 0, 0);
+      startDate.setHours(0, 0, 0, 0);
+      endDate.setHours(0, 0, 0, 0);
+      
+      return txDate >= startDate && txDate <= endDate;
+    })
+    
 
   const sortedTransactions = [...filteredTransactions].sort((a, b) =>
     sortOrder === "desc"
@@ -79,8 +102,15 @@ const TransactionList = ({
           "&::-webkit-scrollbar": { display: "none" },
         }}
       >
-        <VStack align="stretch" spacing={3}>
-          {sortedTransactions.map((tx) => {
+       <VStack align="stretch" spacing={3}>
+  {sortedTransactions.length === 0 ? (
+    <Flex justify="center" align="center" p={10}>
+      <Text fontSize="md" color="gray.500">
+        No transactions found
+      </Text>
+    </Flex>
+  ) : (
+          sortedTransactions.map((tx) => {
             const keyword = tx.description?.toLowerCase() || "";
             const matchedCategory =
               categories.find((cat) =>
@@ -155,10 +185,11 @@ const TransactionList = ({
                 </Flex>
               </Flex>
             );
-          })}
+          })
+        )}
         </VStack>
         <div className="flex justify-center text-center p-10">
-          {hasMore && (
+          { sortedTransactions.length > 0 && hasMore && (
             <button
               className=" p-2 rounded-md text-gray-500 hover:text-blue-500 transition"
               onClick={loadMoreTransactions}
