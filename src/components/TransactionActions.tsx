@@ -12,10 +12,8 @@ import {
   ModalCloseButton,
   Flex,
 } from "@chakra-ui/react";
-import { TbCsv } from "react-icons/tb";
-import { IoAddOutline } from "react-icons/io5";
-import AddTransaction from "./modals/AddTransaction";
-import CsvImport from "../utils/csvImport";
+
+import CsvImport from "../utils/CsvImport";
 import { useRef, useState, useEffect } from "react";
 import { RangeDatepicker } from "chakra-dayzed-datepicker";
 import type { Dispatch, SetStateAction } from "react";
@@ -35,7 +33,6 @@ const TransactionActions = ({
   onDateRangeChange,
   onResetFilterType,
 }: TransactionActionsProps) => {
-  const { isOpen, onOpen, onClose } = useDisclosure();
   const {
     isOpen: isDateModalOpen,
     onOpen: onDateModalOpen,
@@ -129,19 +126,7 @@ const TransactionActions = ({
           />
         </Tooltip>
 
-        <Tooltip label="Import CSV" hasArrow>
-          <IconButton
-            aria-label="Import CSV"
-            icon={<TbCsv />}
-            size="md"
-            bg={buttonBg}
-            color={buttonColor}
-            borderRadius="full"
-            variant="outline"
-            _hover={{ bg: hoverBg, color: buttonBg }}
-            onClick={() => fileInputRef.current?.click()}
-          />
-        </Tooltip>
+    
 
         <Tooltip label="Export CSV" hasArrow>
   <IconButton
@@ -162,7 +147,7 @@ const TransactionActions = ({
       </HStack>
 
       {/* Modal para el selector de fechas */}
-      <Modal isOpen={isDateModalOpen} onClose={onDateModalClose} size="lg">
+      <Modal isOpen={isDateModalOpen} onClose={onDateModalClose}isCentered size="md">
         <ModalOverlay />
         <ModalContent>
           <ModalHeader>Select dates</ModalHeader>

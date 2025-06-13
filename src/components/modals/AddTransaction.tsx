@@ -65,7 +65,7 @@ const AddTransaction = ({ isOpen, onClose }: AddTransactionProps) => {
         account_id: 1,
         category_id,
         transfer_id: null,
-        created_at: new Date().toISOString(),
+        createdAt: new Date().toISOString(),
       });
      
       await fetchTransactions();
@@ -135,7 +135,7 @@ const AddTransaction = ({ isOpen, onClose }: AddTransactionProps) => {
         </ModalBody>
         
         <ModalFooter>
-          <Button variant="ghost" mr={3} onClick={onClose}>
+          <Button  mr={3} onClick={onClose}>
             Cancel
           </Button>
           <Button colorScheme="blue" onClick={handleSubmit}>

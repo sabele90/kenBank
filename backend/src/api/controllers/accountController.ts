@@ -3,7 +3,7 @@ import Account from "../models/Account";
 import Currencie from "../models/Currencie";
 
 // GET
-export const getAllAccounts = async (req: Request, res: Response) => {
+export const getAllAccounts =  async (req: Request, res: Response): Promise<void> =>  {
   try {
     const accounts = await Account.findAll();
     res.status(200).json(accounts);
@@ -12,7 +12,7 @@ export const getAllAccounts = async (req: Request, res: Response) => {
   }
 };
 
-export const getAccountById = async (req: Request, res: Response) => {
+export const getAccountById =  async (req: Request, res: Response): Promise<void> =>  {
   try {
     const { account_id } = req.params;
     const account = await Account.findByPk(account_id);
@@ -26,7 +26,7 @@ export const getAccountById = async (req: Request, res: Response) => {
   }
 };
 
-export const getAccountsByUserId = async (req: Request, res: Response) => {
+export const getAccountsByUserId =  async (req: Request, res: Response): Promise<void> =>  {
   try {
     const { user_id } = req.params;
     const accounts = await Account.findAll({
@@ -46,7 +46,7 @@ export const getAccountsByUserId = async (req: Request, res: Response) => {
 };
 
 // POST
-export const createAccount = async (req: Request, res: Response) => {
+export const createAccount =  async (req: Request, res: Response): Promise<void> =>  {
   try {
     const newAccount = await Account.create(req.body);
     res.status(201).json(newAccount);
@@ -56,7 +56,7 @@ export const createAccount = async (req: Request, res: Response) => {
 };
 
 // PUT
-export const updateAccount = async (req: Request, res: Response) => {
+export const updateAccount =  async (req: Request, res: Response): Promise<void> =>  {
   try {
     const { account_id } = req.params;
     const [updated] = await Account.update(req.body, {
@@ -76,7 +76,7 @@ export const updateAccount = async (req: Request, res: Response) => {
 };
 
 // DELETE
-export const deleteAccount = async (req: Request, res: Response) => {
+export const deleteAccount =  async (req: Request, res: Response): Promise<void> =>  {
   try {
     const { account_id } = req.params;
     const deleted = await Account.destroy({ where: { id: account_id } });

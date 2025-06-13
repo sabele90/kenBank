@@ -14,8 +14,7 @@ import { checkConnection } from "../db";
 
 async function connectDB(): Promise<void> {
   await checkConnection();
-    // 🔁 Sincroniza los modelos con la base de datos
-    await sequelize.sync({ alter: true }); // o { force: true } en desarrollo
+    await sequelize.sync({ alter: true }); 
     console.log("📦 Base de datos sincronizada");
 }
 

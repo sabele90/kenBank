@@ -7,7 +7,7 @@ export interface Account {
     number?: string; 
     currency_id: number; 
     status?: string; 
-    created_at?: Date; 
+    createdAt?: Date; 
     balance?: number;
     currency?: Currencie;
   }

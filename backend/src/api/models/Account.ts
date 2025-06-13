@@ -9,7 +9,7 @@ export class Account extends Model {
   public number?: string;
   public currency_id!: number;
   public status?: string;
-  public created_at?: Date;
+  public createdAt?: Date;
   public balance?: number;
 }
 
@@ -40,9 +40,10 @@ Account.init(
       type: DataTypes.STRING,
       allowNull: true,
     },
-    created_at: {
+    createdAt:{
       type: DataTypes.DATE,
       allowNull: true,
+      field: 'created_at',
     },
     balance: {
       type: DataTypes.DECIMAL(10, 2),

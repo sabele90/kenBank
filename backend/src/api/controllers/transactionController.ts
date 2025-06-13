@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 import { Transaction } from "../models/Transaction";
 import { Account } from "../models/Account";
-export const getAllTransactions = async (req: Request, res: Response) => {
+export const getAllTransactions =  async (req: Request, res: Response): Promise<void> =>  {
   try {
     const transactions = await Transaction.findAll({
       limit: 20, 
@@ -12,7 +12,7 @@ export const getAllTransactions = async (req: Request, res: Response) => {
     res.status(500).send((error as Error).message);
   }
 };
-export const getTransactionsByAccountId = async (req: Request, res: Response) => {
+export const getTransactionsByAccountId =  async (req: Request, res: Response): Promise<void> =>  {
   try {
     const { account_id, offset = 0, limit = 20 } = req.query;
 
@@ -34,14 +34,14 @@ export const getTransactionsByAccountId = async (req: Request, res: Response) =>
 
 
 
-export const getOneTransaction = async (req: Request, res: Response) => {
+export const getOneTransaction =  async (req: Request, res: Response): Promise<void> =>  {
   const { transaction_id } = req.params;
   const transaction = await Transaction.findByPk(transaction_id);
   if (!transaction)  res.status(404).send("Not found");
   res.status(200).json(transaction);
 };
 
-export const createTransaction = async (req: Request, res: Response) => {
+export const createTransaction =  async (req: Request, res: Response): Promise<void> =>  {
   try {
     const { description, amount, account_id, category_id, transfer_id } = req.body;
 
@@ -73,7 +73,7 @@ export const createTransaction = async (req: Request, res: Response) => {
   }
 };
 //INSERTAR VARIAS TRANSACCIONES
-export const uploadTransactions = async (req: Request, res: Response) => {
+export const uploadTransactions =  async (req: Request, res: Response): Promise<void> =>  {
   try {
     const newTransactions = await Transaction.bulkCreate(req.body);
     res.status(201).json(newTransactions);
@@ -82,7 +82,7 @@ export const uploadTransactions = async (req: Request, res: Response) => {
   }
 };
 
-export const updateTransaction = async (req: Request, res: Response) => {
+export const updateTransaction =  async (req: Request, res: Response): Promise<void> =>  {
   const { transaction_id } = req.params;
   const [updated] = await Transaction.update(req.body, {
     where: { id: transaction_id },
@@ -92,7 +92,7 @@ export const updateTransaction = async (req: Request, res: Response) => {
   res.status(200).json(updatedTransaction);
 };
 
-export const deleteTransaction = async (req: Request, res: Response) => {
+export const deleteTransaction =  async (req: Request, res: Response): Promise<void> =>  {
   const { transaction_id } = req.params;
   const deleted = await Transaction.destroy({ where: { id: transaction_id } });
   if (!deleted)  res.status(404).send("Not found");
