@@ -59,16 +59,9 @@ npm run dev
 cd backend
 npm install
 cp .env.example .env
-
-DB_NAME=postgres
-DB_USER=postgres
-DB_PASS=<provided-by-email>
-DB_HOST=<provided-by-email>
-DB_PORT=5432
-
 npm run dev
 
-🗂 CSV Import Format
+### 🗂 CSV Import Format
 cd importCsv
 This file contains the necessary headers (description, amount, account_id, category_id) and example data.
 You can use it by clicking “Import CSV” on the dashboard and selecting the file to simulate a transaction upload.
