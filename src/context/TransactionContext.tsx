@@ -4,7 +4,7 @@ import type { Transaction } from "../types/Transaction";
 import type { Account } from "../types/Account";
 import type { Currencie } from "../types/Currencie";
 import { useCallback } from "react";
-import { getAccountsByUserId } from "../services/accountService"; // asegúrate de tener esto
+import { getAccountsByUserId } from "../services/accountService"; 
 
 interface TransactionContextType {
   transactions: Transaction[];

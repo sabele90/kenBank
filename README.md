@@ -19,12 +19,16 @@ This project is a **banking dashboard** developed as part of the **Frontend Deve
 - ⭐ View transaction history (description, date, time, amount)
 - ⭐ Filter transactions by keyword
 - ⭐ Add, edit, and delete transactions
-- ⭐ Smart categorization (e.g., "shopping" → "Fashion")
 - ⭐ Color-coded transactions (red = withdrawals, green = deposits)
+- ⭐ CSV Export of transaction history
+- ⭐ CSV import for bulk transactions
+
 
 ### ⚙️ Additional Functionality
 - ⭐ Glassmorphism UI (blur + transparency)
 - ⭐ Dark mode toggle
+- ⭐ Conversion from EUR to KES
+- ⭐ Smart categorization (e.g., "shopping" → "Fashion")
 
 ---
 
@@ -63,6 +67,11 @@ DB_HOST=<provided-by-email>
 DB_PORT=5432
 
 npm run dev
+
+🗂 CSV Import Format
+cd importCsv
+This file contains the necessary headers (description, amount, account_id, category_id) and example data.
+You can use it by clicking “Import CSV” on the dashboard and selecting the file to simulate a transaction upload.
 
 📌 Final Notes
 

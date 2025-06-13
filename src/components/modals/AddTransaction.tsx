@@ -39,7 +39,7 @@ const AddTransaction = ({ isOpen, onClose }: AddTransactionProps) => {
   const [description, setDescription] = useState("");
   const [type, setType] = useState<"deposit" | "withdrawal">("deposit");
   const [amount, setAmount] = useState("");
-  const { fetchTransactions } = useTransactions();
+  const { fetchTransactions , fetchAccountsByUser, account} = useTransactions();
 
   const toast = useToast();
 
@@ -69,6 +69,10 @@ const AddTransaction = ({ isOpen, onClose }: AddTransactionProps) => {
       });
      
       await fetchTransactions();
+      if (account?.user_id) {
+        await fetchAccountsByUser(account.user_id);
+      }
+      
       //actualiza balance
       toast({
         title: "Transaction added.",
@@ -82,6 +86,7 @@ const AddTransaction = ({ isOpen, onClose }: AddTransactionProps) => {
       setAmount("");
       //abrir nuevo modal , por defecto = deposit
       setType("deposit");
+      
       onClose();
     } catch (error) {
       console.error('Error creating transaction:', error);

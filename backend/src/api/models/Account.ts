@@ -1,6 +1,6 @@
 import { DataTypes, Model } from "sequelize";
 import { sequelize } from "../../db/index";
-
+import { Currencie } from "../models/Currencie"
 
 export class Account extends Model {
   public id!: number;
@@ -11,6 +11,7 @@ export class Account extends Model {
   public status?: string;
   public createdAt?: Date;
   public balance?: number;
+  public currency?: Currencie;
 }
 
 Account.init(

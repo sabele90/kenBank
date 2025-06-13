@@ -1,6 +1,15 @@
 import axios from "axios";
 import type { Transaction } from "../types/Transaction";
 const API_URL = "http://localhost:3000/api/transactions";
+interface CurrencyConversionPayload {
+  eur_account_id: number;
+  kes_account_id: number;
+  eur_amount: number;
+}
+export const convertEurToKes = async (data: CurrencyConversionPayload) => {
+  const res = await axios.post(`${API_URL}/convert_eur`, data);
+  return res.data;
+};
 
 //GET
 export const getAllTransactions = async () => {
@@ -32,7 +41,6 @@ export const createTransaction = async (data: Transaction) => {
   const res = await axios.post(API_URL, data);
   return res.data;
 };
-
 export const uploadTransactions = async (data: Transaction []) => {
   const res = await axios.post(`${API_URL}/upload`, data);
   return res.data;

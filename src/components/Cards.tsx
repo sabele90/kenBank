@@ -1,11 +1,10 @@
-
 import { useTransactions } from "../context/TransactionContext";
 
 const Cards = () => {
   const { account, currency } = useTransactions();
-  
+
   const balance = account?.balance ? Number(account.balance) : 0; // Convertir balance a número
-  
+
   return (
     <div className="flex flex-wrap justify-center gap-6 p-10">
       {/* Tarjeta 1 - Modo claro */}
@@ -35,15 +34,14 @@ const Cards = () => {
         }}
       >
         <div className="flex justify-center pt-6">
-  
-  <p className="text-md ">{account?.number || "Loading..."}</p>
-</div>
-<div className="pt-8">
-  <p className="text-sm">Balance</p>
-  <p className="text-lg font-bold">
-    {balance.toFixed(2)} {currency?.symbol || ""}
-  </p>
-</div>
+          <p className="text-md ">{account?.number || "Loading..."}</p>
+        </div>
+        <div className="pt-8">
+          <p className="text-sm">Balance</p>
+          <p className="text-lg font-bold">
+            {balance.toFixed(2)} {currency?.symbol || ""}
+          </p>
+        </div>
       </div>
 
       {/* Tarjeta 2 - Modo oscuro */}
@@ -55,7 +53,6 @@ const Cards = () => {
         }}
       >
         <div className="flex justify-center pt-6">
-  
           <p className="text-md ">{account?.number || "Loading..."}</p>
         </div>
         <div>

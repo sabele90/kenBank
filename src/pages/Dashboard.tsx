@@ -25,6 +25,7 @@ const Dashboard = () => {
           <div className="flex justify-center items-center gap-2 text-center">
             <div className="text-2xl font-bold">Transactions</div>
             <button
+             className="hover:text-blue-500"
               onClick={() =>
                 setSortOrder((prev) => (prev === "asc" ? "desc" : "asc"))
               }
