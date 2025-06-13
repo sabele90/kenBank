@@ -48,7 +48,7 @@ This project is a **banking dashboard** developed as part of the **Frontend Deve
 
 ### 📥 Clone the project
 
-git clone https://github.com/your-username/kenbank-dashboard.git
+git clone https://github.com/sabele90/kenbank-dashboard.git
 cd kenbank-dashboard
 
 ### 🖥️ Frontend Setup
