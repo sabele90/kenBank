@@ -52,18 +52,18 @@ git clone https://github.com/sabele90/kenBank.git
 cd kenbank-dashboard
 
 ### 🖥️ Frontend Setup
-npm install
-npm run dev
+- npm install
+- npm run dev
 
 ### 🛠️ Backend Setup
-cd backend
-npm install
-cp .env.example .env
-npm run dev
+- cd backend
+- npm install
+- cp .env.example .env
+- npm run dev
 
 ### 🗂 CSV Import Format
-cd importCsv
-This file contains the necessary headers (description, amount, account_id, category_id) and example data.
+- cd importCsv
+- This file contains the necessary headers (description, amount, account_id, category_id) and example data.
 You can use it by clicking “Import CSV” on the dashboard and selecting the file to simulate a transaction upload.
 
 📌 Final Notes
