@@ -1,6 +1,6 @@
 # 💳 KenTech Banking Dashboard
 
-This project is a **banking dashboard** developed as part of the **Frontend Developer Technical Assessment for KenTech (2025)**. It allows users to manage bank accounts, view transactions, and track balances with a clean, responsive, and accessible UI.
+This project is a **banking dashboard** developed as part of the **Frontend Developer Technical Assessment for KenTech (2025)**. It allows users to manage bank accounts, view transactions, and track balances with a clean, and accessible UI.
 
 ---
 
